@@ -7,24 +7,27 @@ import AddTask from './pages/AddTask'
 import LoginButton from './pages/Login'
 import LogoutButton from './pages/Logout'
 import Profile from './pages/Profile'
+import { TaskManagerProvider } from './context/TaskMangerContext'
 
 function App() {
   return (
-    <Router>
-      <Header />
-      <main>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/addTask' element={<AddTask />} />
-          <Route path='/login' element={<LoginButton />} />
+    <TaskManagerProvider>
+      <Router>
+        <Header />
+        <main>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/addTask' element={<AddTask />} />
+            <Route path='/login' element={<LoginButton />} />
 
-          <Route path='/logout' element={<LogoutButton />} />
-          <Route path='/user' element={<Profile />} />
-        </Routes>
-      </main>
+            <Route path='/logout' element={<LogoutButton />} />
+            <Route path='/user' element={<Profile />} />
+          </Routes>
+        </main>
 
-      <Footer />
-    </Router>
+        <Footer />
+      </Router>
+    </TaskManagerProvider>
   )
 }
 
