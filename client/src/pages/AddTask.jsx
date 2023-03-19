@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate, useLocation, useParams } from 'react-router-dom'
 import axios from 'axios'
+import TaskManagerContext from '../context/TaskMangerContext'
 
 function AddTask() {
   const taskInfo = localStorage.getItem('taskInfo')
     ? JSON.parse(localStorage.getItem('taskInfo'))
     : null
+
+  const { addTask } = useContext(TaskManagerContext)
 
   const nameInfo = taskInfo ? taskInfo.name : ''
   const descriptionInfo = taskInfo ? taskInfo.description : ''
@@ -55,14 +58,14 @@ function AddTask() {
   const submitHandler = async (e) => {
     e.preventDefault()
     // console.log('hello world')
-    const AddTask = {
+    const taskToAdd = {
       name,
       description,
       status,
       priorityLevel,
       date,
     }
-
+    console.log(taskToAdd)
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -76,19 +79,20 @@ function AddTask() {
         console.log('edit', taskId)
         const { data } = await axios.put(
           `http://localhost:5002/update/${taskId}`,
-          AddTask,
+          taskToAdd,
           config
         )
 
         console.log('edit', data)
         navigate('/')
       } else {
-        const { data } = await axios.post(
-          'http://localhost:5002/createTask',
-          AddTask,
-          config
-        )
-        console.log('add', data)
+        addTask(taskToAdd)
+        // const { data } = await axios.post(
+        //   'http://localhost:5002/createTask',
+        //   AddTask,
+        //   config
+        // )
+        // console.log('add', data)
         navigate('/')
       }
 
