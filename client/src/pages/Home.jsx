@@ -4,10 +4,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FiEdit } from 'react-icons/fi'
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios'
+import Spinner from '../components/spinner'
 import TaskMangerContext from '../context/TaskMangerContext'
 
 function Home() {
-  const { tasks, isLoading, fetchTask, deleteTask } =
+  const { tasks, message, isLoading, fetchTask, deleteTask } =
     useContext(TaskMangerContext)
 
   // const [tasks, setTasks] = useState([])
@@ -29,43 +30,25 @@ function Home() {
 
   const deleteHandler = async (task) => {
     //  calling the deleteTask function in TaskManager context APi
-    deleteTask(task)
-    //   console.log('delete data', task._id)
-    //   // setRefresh((prevState) => !prevState)
-    //   try {
-    //     const config = {
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //     }
-
-    //     const { data } = await axios.delete(
-    //       `http://localhost:5002/removeTask/${task._id}`,
-    //       config
-    //     )
-    //     console.log('delete data', data)
-    //     setTasks(data)
-    //     // setRefresh((prevState) => !prevState)
-    //   } catch (error) {
-    //     console.log(error.message)
-    //     const err = error.message
-    //     setMessage(err)
-    //   }
-    // }
-    // const editHandler = (edit) => {
-    //   navigate(`/addTask?taskId=${edit._id}`)
-    //   localStorage.setItem('taskInfo', JSON.stringify(edit))
-    //   // console.log('edit data')
+    await deleteTask(task)
+  }
+  const editHandler = (edit) => {
+    navigate(`/addTask?taskId=${edit._id}`)
+    localStorage.setItem('taskInfo', JSON.stringify(edit))
+    console.log('edit data')
   }
 
-  return (
-    // <div className='mt-24'>
+  return isLoading ? (
     <div className='flex flex-col lg:mt-28 sm:mt-60 xs:mt-60'>
-      {/* {message && (
+      <Spinner />
+    </div>
+  ) : (
+    <div className='flex flex-col lg:mt-28 sm:mt-60 xs:mt-60'>
+      {message && (
         <h3 className=' text-red-600 capitalize bg-rose-300 w-fit my-0 mx-auto py-1.5 px-3 rounded-lg'>
           {message}
         </h3>
-      )} */}
+      )}
       <h2 className='my-6 text-xl font-medium leading-tight font-medium dark:border-neutral-50 text-center font-bold'>
         List of Tasks
       </h2>
@@ -88,7 +71,7 @@ function Home() {
                     Status
                   </th>
                   <th scope='col' className='px-6 py-4'>
-                    Level
+                    PriorityLevel
                   </th>
                   <th scope='col' className='px-6 py-4'>
                     Date
@@ -126,7 +109,7 @@ function Home() {
                         type='button'
                         className='inline-block rounded border-2 border-teal-400 px-6 pt-2 pb-[6px] text-xs font-medium uppercase leading-normal text-teal transition duration-150 ease-in-out hover:border-teal-600 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-teal-600 focus:border-teal-600 focus:text-teal-600 focus:outline-none focus:ring-0 active:border-teal-700 active:text-teal-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10'
                         data-te-ripple-init
-                        // onClick={() => editHandler(task)}
+                        onClick={() => editHandler(task)}
                       >
                         <FiEdit className='inline text-xl' />
                       </button>
