@@ -8,7 +8,7 @@ function AddTask() {
     ? JSON.parse(localStorage.getItem('taskInfo'))
     : null
 
-  const { addTask } = useContext(TaskManagerContext)
+  const { message, addTask, updateTask } = useContext(TaskManagerContext)
 
   const nameInfo = taskInfo ? taskInfo.name : ''
   const descriptionInfo = taskInfo ? taskInfo.description : ''
@@ -22,7 +22,7 @@ function AddTask() {
   const [priorityLevel, setPriorityLevel] = useState(levelInfo)
   const [date, setDate] = useState(dateInfo)
 
-  const [message, setMessage] = useState(null)
+  // const [message, setMessage] = useState(null)
 
   const navigate = useNavigate()
 
@@ -33,28 +33,8 @@ function AddTask() {
   // local storage have to be removed to stay clear when we want to
   useEffect(() => {
     localStorage.removeItem('taskInfo')
-    // const config = {
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    // }
-    // if we come over edit button or we have the query parameter
-    // if (location.search.length != 0) {
-    //   const getAllTask = async () => {
-    //     const { data } = await axios.get('http://localhost:5002/getAllTask')
-    //     setName(data.name)
-    //     setName(data.description)
-    //     setName(data.status)
-    //     setName(data.priorityLevel)
-    //     setName(data.date)
-    //     console.log(data)
-    //   }
-    //   getAllTask()
-    // }
   })
 
-  //  dont forget that post will occur when "location.search" doesnt exist but edit will be when it exist
-  // use if statement
   const submitHandler = async (e) => {
     e.preventDefault()
     // console.log('hello world')
@@ -66,42 +46,26 @@ function AddTask() {
       date,
     }
     console.log(taskToAdd)
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+
+    // note: We cant use the react-router-dom properties outside
+    // the wrapped element so to get the task Id I have to use
+    // the location inside the addTask file not taskManagerContext
+
+    if (location.search.length != 0) {
+      const taskId = location.search.split('=')[1]
+      // console.log('edit', taskId)
+      await updateTask(taskToAdd, taskId)
+
+      navigate('/')
+    } else {
+      // addTask from context APi should run first before navigation
+      // thus I use the async await method
+      await addTask(taskToAdd)
+
+      navigate('/')
     }
 
-    //  handle put and post request based on the location.search
-    try {
-      if (location.search.length != 0) {
-        const taskId = location.search.split('=')[1]
-        console.log('edit', taskId)
-        const { data } = await axios.put(
-          `http://localhost:5002/update/${taskId}`,
-          taskToAdd,
-          config
-        )
-
-        console.log('edit', data)
-        navigate('/')
-      } else {
-        addTask(taskToAdd)
-        // const { data } = await axios.post(
-        //   'http://localhost:5002/createTask',
-        //   AddTask,
-        //   config
-        // )
-        // console.log('add', data)
-        navigate('/')
-      }
-
-      localStorage.removeItem('taskInfo')
-    } catch (error) {
-      console.log(error.message)
-      const err = error.message
-      setMessage(err)
-    }
+    localStorage.removeItem('taskInfo')
   }
   return (
     <form className='lg:mt-28 sm:mt-60 xs:mt-60' onSubmit={submitHandler}>
@@ -126,17 +90,6 @@ function AddTask() {
           />
         </div>
         <div className=' relative mb-3 w-1/2' data-te-input-wrapper-init>
-          <input
-            type='text'
-            className='peer block min-h-[auto] w-full rounded border-2 border-gray-600 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 placeholder:text-neutral-700 '
-            id='exampleFormControlInputText'
-            placeholder='Description'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
-        <div className=' relative mb-3 w-1/2' data-te-input-wrapper-init>
           <select
             className='peer block min-h-[auto] w-full rounded border-2 border-gray-600 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 placeholder:text-neutral-700 '
             value={status}
@@ -149,15 +102,29 @@ function AddTask() {
           </select>
         </div>
         <div className=' relative mb-3 w-1/2' data-te-input-wrapper-init>
-          <input
+          <select
+            className='peer block min-h-[auto] w-full rounded border-2 border-gray-600 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 placeholder:text-neutral-700 '
+            value={priorityLevel}
+            onChange={(e) => setPriorityLevel(e.target.value)}
+            data-te-select-init
+          >
+            <option value='1'>1</option>
+            <option value='2'>2</option>
+            <option value='3'>3</option>
+            <option value='4'>4</option>
+            <option value='5'>5</option>
+          </select>
+        </div>
+        <div className=' relative mb-3 w-1/2' data-te-input-wrapper-init>
+          <textarea
             type='text'
             className='peer block min-h-[auto] w-full rounded border-2 border-gray-600 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 placeholder:text-neutral-700 '
             id='exampleFormControlInputText'
-            placeholder='priorityLevel'
-            value={priorityLevel}
-            onChange={(e) => setPriorityLevel(e.target.value)}
+            placeholder='Description'
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             required
-          />
+          ></textarea>
         </div>
         <div className=' relative mb-3 w-1/2' data-te-input-wrapper-init>
           <input
