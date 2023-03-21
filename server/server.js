@@ -43,7 +43,29 @@ app.get('/', (req, res) => {
 })
 
 app.get('/getAllTask', async (req, res) => {
+  // const pageSize = 10
+  // const page = Number(req.query.pageNumber) || 1
+
+  // const keyword = req.query.keyword
+  //   ? {
+  //       name: {
+  //         $regex: req.query.keyword,
+  //         $options: 'i',
+  //       },
+  //     }
+  //   : {}
+
+  // const count = await taskModel.countDocuments({ ...keyword })
+
+  // const allTask = await taskModel
+  //   .find({ ...keyword })
+  //   .limit(pageSize)
+  //   .skip(pageSize * (page - 1))
+
+  // res.json({ allTask, page, pages: Math.ceil(count / pageSize) })
+  //  legacy code
   let allTask = await taskModel.find()
+  console.log(allTask)
   res.json(allTask)
 })
 

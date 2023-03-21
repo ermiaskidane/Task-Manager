@@ -7,6 +7,7 @@ export const TaskManagerProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [tasks, setTasks] = useState([])
   const [message, setMessage] = useState(null)
+
   // const [taskEdit, setTaskEdit] = useState({
   //   task: {},
   //   edit: false,
@@ -15,7 +16,7 @@ export const TaskManagerProvider = ({ children }) => {
   const fetchTask = async () => {
     const { data } = await axios.get('http://localhost:5002/getAllTask')
     setTasks(data)
-    // console.log(data)
+    console.log(data)
     setIsLoading(false)
   }
 
@@ -55,7 +56,22 @@ export const TaskManagerProvider = ({ children }) => {
           config
         )
         console.log('delete data', data)
-        // setTasks(tasks.filter((t) => t.id !== task._id))
+        // const { allTask } = tasks
+        // console.log('is this the Id ', task._id)
+        // console.log(
+        //   'what is wrong',
+        //   task.allTask.filter((t) => t.id !== task._id)
+        // )
+        // console.log('delete data @@@@@@@@@@@ ', tasks)
+        // console.log('delete data #############', tasks.allTask)
+        // setTasks(
+        //   tasks.allTask.filter((t) => t.id != task._id)
+        //   // tasks.filter((task) => task.allTask.filter((t) => t.id != task._id))
+        // )
+
+        // console.log('delete data', allTask)
+        // console.log(setTasks([...allTask, data]))
+        // setTasks([...allTask, data])
         setTasks(data)
         // setRefresh((prevState) => !prevState)
       } catch (error) {
@@ -70,6 +86,38 @@ export const TaskManagerProvider = ({ children }) => {
       }
     }
   }
+
+  // const data = [
+  //   {
+  //     menuName: 'Hot dogs',
+  //     menu: [
+  //       { dishId: '1', dish_has_categories: [{ CategoryId: '8' }] },
+  //       { dishId: '2', dish_has_categories: [{ CategoryId: '9' }] },
+  //     ],
+  //   },
+  //   {
+  //     menuName: 'Burgers',
+  //     menu: [
+  //       { dishId: '3', dish_has_categories: [{ CategoryId: '6' }] },
+  //       { dishId: '4', dish_has_categories: [{ CategoryId: '4' }] },
+  //     ],
+  //   },
+  //   { name: 'Drinks', menu: [] },
+  // ]
+
+  // const res = data.filter(x =>
+  //   x.menu.some(y =>
+  //     y.dish_has_categories.some(z => z.CategoryId === '8')
+  // )
+  // );
+  // console.log(res)
+
+  //  another nested array that has similarities
+  //   const data = [{"guid":"j5Dc9Z","courses":[{"id":3,"name":"foo"}]},{"guid":"a5gdfS","courses":[{"id":1,"name":"bar"},{"id":3,"name":"foo"}]},{"guid":"jHab6i","courses":[{"id":7,"name":"foobar"}]}];
+  // const courses = [1, 6, 3];
+
+  // const r = data.filter(d => d.courses.every(c => courses.includes(c.id)));
+  // console.log(r);
 
   const updateTask = async (taskToAdd, taskId) => {
     try {

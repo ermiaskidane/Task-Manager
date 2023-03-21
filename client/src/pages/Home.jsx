@@ -5,18 +5,22 @@ import { FiEdit } from 'react-icons/fi'
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios'
 import Spinner from '../components/spinner'
+import Pagination from '../components/pagination'
 import TaskMangerContext from '../context/TaskMangerContext'
 
 function Home() {
+  const [currentPage, setCurrentPage] = useState(2)
+  const [postPerPage, setPostPerPage] = useState(2)
+
   const { tasks, message, isLoading, fetchTask, deleteTask } =
     useContext(TaskMangerContext)
 
-  // const [tasks, setTasks] = useState([])
-  // const [message, setMessage] = useState(null)
-  // const [refresh, setRefresh] = useState(false)
+  const numOfTotalPages = Math.ceil(tasks.length / postPerPage)
+  const pages = [...Array(numOfTotalPages + 1).keys()].slice(1)
 
-  const navigate = useNavigate()
-  console.log(useAuth0())
+  const lastPostIndex = currentPage * postPerPage
+  const firstPostIndex = lastPostIndex - postPerPage
+  const currentPosts = tasks.slice(firstPostIndex, lastPostIndex)
 
   useEffect(() => {
     fetchTask()
@@ -27,6 +31,10 @@ function Home() {
     // }
     // getAllTask()
   }, [])
+  console.log(currentPosts)
+
+  const navigate = useNavigate()
+  console.log(useAuth0())
 
   const deleteHandler = async (task) => {
     //  calling the deleteTask function in TaskManager context APi
@@ -36,6 +44,19 @@ function Home() {
     navigate(`/addTask?taskId=${edit._id}`)
     localStorage.setItem('taskInfo', JSON.stringify(edit))
     console.log('edit data')
+  }
+
+  const prevPageHandler = () => {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  const nextPageHandler = () => {
+    // const numOfTotalPages = tasks.length
+    if (currentPage !== numOfTotalPages) {
+      setCurrentPage(currentPage + 1)
+    }
   }
 
   return isLoading ? (
@@ -52,6 +73,19 @@ function Home() {
       <h2 className='my-6 text-xl font-medium leading-tight font-medium dark:border-neutral-50 text-center font-bold'>
         List of Tasks
       </h2>
+      <div className='  ml-0 mb-3 w-1/2' data-te-input-wrapper-init>
+        <select
+          className='peer block min-h-[auto]  rounded border-2 border-gray-600 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 placeholder:text-neutral-700 '
+          value={postPerPage}
+          onChange={(e) => setPostPerPage(e.target.value)}
+          data-te-select-init
+        >
+          <option value='2'>2 </option>
+          <option value='4'>4</option>
+          <option value='6'>6</option>
+        </select>
+      </div>
+
       <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
         <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
           <div className='overflow-hidden'>
@@ -85,7 +119,7 @@ function Home() {
                 </tr>
               </thead>
 
-              {tasks.map((task, index) => (
+              {currentPosts.map((task, index) => (
                 <tbody key={task._id}>
                   <tr className='border-b dark:border-neutral-500'>
                     <td className='whitespace-nowrap px-6 py-4 font-medium'>
@@ -128,6 +162,13 @@ function Home() {
                 </tbody>
               ))}
             </table>
+            <Pagination
+              numPage={pages}
+              setCurrentPage={setCurrentPage}
+              currentPage={currentPage}
+              prevPageHandler={prevPageHandler}
+              nextPageHandler={nextPageHandler}
+            />
           </div>
         </div>
       </div>
